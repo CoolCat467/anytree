@@ -17,10 +17,10 @@
         "trim_trailing_white_space_on_save": true,
         "default_encoding": "UTF-8",
         "SublimeLinter.linters.pycodestyle.args": [
-            "--config=$project_path/setup.cfg"
+            "--config=$project_path/pyproject.toml"
         ],
         "SublimeLinter.linters.pydocstyle.args": [
-            "--config=$project_path/setup.cfg"
+            "--config=$project_path/pyproject.toml"
         ]
     }
 }
