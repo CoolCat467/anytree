@@ -36,6 +36,7 @@ dev = [
     "sphinx-rtd-theme>=2.0.0",
     "sphinxemoji>=0.3.1",
     "test2ref>=0.4.2",
+    "types-six>=1.17.0.20250515",
 ]
 
 [build-system]
@@ -194,7 +195,24 @@ exclude_lines = [
 ]
 
 [tool.mypy]
-mypy_path = "anytree"
+files = ["src/anytree"]
+exclude = [
+    # TODO: Remove these exclusions add missing type annotations
+    "src/anytree/importer",
+    "src/anytree/exporter",
+    "src/anytree/iterators/preorderiter.py",
+    "src/anytree/iterators/postorderiter.py",
+    "src/anytree/iterators/levelorderiter.py",
+    "src/anytree/iterators/zigzaggroupiter.py",
+    "src/anytree/iterators/levelordergroupiter.py",
+    "src/anytree/util",
+    "src/anytree/dotexport.py",
+    "src/anytree/cachedsearch.py",
+    "src/anytree/resolver.py",
+    "src/anytree/search.py",
+    "src/anytree/render.py",
+    "src/anytree/walker.py",
+]
 check_untyped_defs = true
 disallow_any_generics = true
 disallow_untyped_calls = true

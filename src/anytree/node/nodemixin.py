@@ -138,9 +138,10 @@ class NodeMixin(Generic[NodeT_co]):
         else:
             parent = None
         if parent is not value:
-            self.__check_loop(value)
+            value_co = cast("NodeT_co", value)
+            self.__check_loop(value_co)
             self.__detach(parent)
-            self.__attach(value)
+            self.__attach(value_co)
 
     def __check_loop(self, node: NodeT_co | None) -> None:
         if node is not None:
@@ -280,20 +281,6 @@ class NodeMixin(Generic[NodeT_co]):
         anytree.node.exceptions.TreeError: Cannot add node Node('/n/a') multiple times as child.
         """,
     )
-
-    @staticmethod
-    def __check_children(children: tuple[NodeT_co, ...]) -> None:
-        seen = set()
-        for child in children:
-            if not isinstance(child, (NodeMixin, LightNodeMixin)):
-                msg = f"Cannot add non-node object {child!r}. It is not a subclass of 'NodeMixin'."
-                raise TreeError(msg)
-            childid = id(child)
-            if childid not in seen:
-                seen.add(childid)
-            else:
-                msg = f"Cannot add node {child!r} multiple times as child."
-                raise TreeError(msg)
 
     @children.setter  # type: ignore[no-redef]
     def children(self, children: tuple[NodeT_co, ...]) -> None:

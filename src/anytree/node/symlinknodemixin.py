@@ -48,7 +48,7 @@ class SymlinkNodeMixin(NodeMixin["SymlinkNodeMixin"]):
 
     def __getattr__(self, name: str) -> object:
         if name in ("_NodeMixin__parent", "_NodeMixin__children"):
-            return super().__getattr__(name)
+            return super().__getattr__(name)  # type: ignore[misc]
         if name == "__setstate__":
             raise AttributeError(name)
         return getattr(self.target, name)

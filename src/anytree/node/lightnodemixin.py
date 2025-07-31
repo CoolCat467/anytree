@@ -282,17 +282,6 @@ class LightNodeMixin(Generic[NodeT_co]):
         """,
     )
 
-    @staticmethod
-    def __check_children(children: tuple[NodeT_co, ...]) -> None:
-        seen = set()
-        for child in children:
-            childid = id(child)
-            if childid not in seen:
-                seen.add(childid)
-            else:
-                msg = f"Cannot add node {child!r} multiple times as child."
-                raise TreeError(msg)
-
     @children.setter  # type: ignore[no-redef]
     def children(self, children: tuple[NodeT_co, ...]) -> None:
         # convert iterable to tuple
