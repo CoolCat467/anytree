@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-import six
-
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator
 
@@ -16,7 +14,7 @@ if TYPE_CHECKING:
 NodeT_co = TypeVar("NodeT_co", bound="NodeMixin[Any] | LightNodeMixin[Any]", covariant=True)
 
 
-class AbstractIter(Generic[NodeT_co], six.Iterator):
+class AbstractIter(Generic[NodeT_co]):
     # pylint: disable=R0205
     """
     Iterate over tree starting at `node`.
