@@ -191,7 +191,7 @@ class LightNodeMixin(Generic[NodeT_co]):
         return tuple(self.__children_or_empty)
 
     @staticmethod
-    def __check_children(children: Iterable[NodeT_co]) -> None:
+    def __check_children(children: Iterable[object]) -> None:
         seen = set()
         for child in children:
             childid = id(child)
@@ -201,10 +201,10 @@ class LightNodeMixin(Generic[NodeT_co]):
                 msg = f"Cannot add node {child!r} multiple times as child."
                 raise TreeError(msg)
 
-    def __children_set(self, children: Iterable[NodeT_co]) -> None:
+    def __children_set(self, children: tuple[NodeT_co, ...]) -> None:
         # convert iterable to tuple
         children = tuple(children)
-        LightNodeMixin.__check_children(children)
+        self.__check_children(children)
         # ATOMIC start
         old_children = self.children
         del self.children
@@ -281,36 +281,6 @@ class LightNodeMixin(Generic[NodeT_co]):
         anytree.node.exceptions.TreeError: Cannot add node Node('/n/a') multiple times as child.
         """,
     )
-
-    @children.setter  # type: ignore[no-redef]
-    def children(self, children: tuple[NodeT_co, ...]) -> None:
-        # convert iterable to tuple
-        children = tuple(children)
-        LightNodeMixin.__check_children(children)
-        # ATOMIC start
-        old_children = self.children
-        del self.children
-        try:
-            self._pre_attach_children(children)
-            for child in children:
-                child.parent = self
-            self._post_attach_children(children)
-            if ASSERTIONS:  # pragma: no branch
-                assert len(self.children) == len(children)
-        except Exception:
-            self.children = old_children
-            raise
-        # ATOMIC end
-
-    @children.deleter  # type: ignore[no-redef]
-    def children(self) -> None:
-        children = self.children
-        self._pre_detach_children(children)
-        for child in self.children:
-            child.parent = None
-        if ASSERTIONS:  # pragma: no branch
-            assert len(self.children) == 0
-        self._post_detach_children(children)
 
     def _pre_detach_children(self, children: tuple[NodeT_co, ...]) -> None:
         """Method call before detaching `children`."""
