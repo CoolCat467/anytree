@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 The methods of the `NodeMixin` class should not access the user class special methods.
 
-For instance, the user define a `MyNode` class as bellow:
+For instance, the user define a `MyNode` class as below:
 
 ```python
 from anytree import NodeMixin
@@ -19,7 +18,7 @@ class MyNode(NodeMixin):
 
 In this class, the used can implement some special methods, like ``__eq__`` or ``__len__``,
 which can have a specific meaning not related to the Tree structure.
-A good exemple could be a `NodeMixin` subclass which also implements `collections.abc.Mapping`:
+A good example could be a `NodeMixin` subclass which also implements `collections.abc.Mapping`:
 
 
 ```python
@@ -69,16 +68,12 @@ To avoid that, the `NodeMixin` class should respect the following rules:
   The `NodeMixin` class should not store nodes in `set` or `dict`.
   Instead, it can store node IDs using the `id()` function.
 """
+
 import functools
 import unittest
+from collections.abc import Mapping
 
 from anytree import NodeMixin
-
-try:
-    from collections.abc import Mapping
-except ImportError:
-    from collections import Mapping
-
 
 # List of method names to which we want to control access:
 #
@@ -197,11 +192,10 @@ class MyNode(NodeMixin):
     def __new__(cls, *args, **kwargs):
         for attr in SPECIAL_METHODS:
             setattr(cls, attr, functools.partial(prevent_access, attr))
-        instance = super(NodeMixin, cls).__new__(cls)
-        return instance
+        return super(NodeMixin, cls).__new__(cls)
 
     def __init__(self, name, parent=None, children=None):
-        super(MyNode, self).__init__()
+        super().__init__()
         self.name = name
         self.parent = parent
         if children:
@@ -209,10 +203,10 @@ class MyNode(NodeMixin):
 
 
 class TestConsistency(unittest.TestCase):
-    """Control the access to special methods"""
+    """Control the access to special methods."""
 
     def setUp(self):
-        super(TestConsistency, self).setUp()
+        super().setUp()
         self.root1 = MyNode("root1")
         self.child1 = MyNode("child1", parent=self.root1)
         self.child2a = MyNode("child2a", parent=self.child1)
@@ -314,12 +308,11 @@ class TestConsistency(unittest.TestCase):
 
 class MyMapping(NodeMixin, Mapping):
     """
-    This class is used to demonstrate a possible implementation
-    which defines some special methods.
+    This class is used to demonstrate a possible implementation which defines some special methods.
     """
 
     def __init__(self, name, parent=None, children=None):
-        super(MyMapping, self).__init__()
+        super().__init__()
         self.name = name
         self.parent = parent
         if children:
@@ -329,8 +322,7 @@ class MyMapping(NodeMixin, Mapping):
         """Iterate over all children recursively."""
         for child in self.children:
             yield child
-            for item in child:
-                yield item
+            yield from child
 
     def __len__(self):
         """Total number of children."""
@@ -345,7 +337,7 @@ class MyMapping(NodeMixin, Mapping):
 
 class TestMyMapping(unittest.TestCase):
     def setUp(self):
-        super(TestMyMapping, self).setUp()
+        super().setUp()
         self.root1 = MyMapping("root1")
         self.child1 = MyMapping("child1", parent=self.root1)
         self.child2a = MyMapping("child2a", parent=self.child1)

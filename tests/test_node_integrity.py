@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from anytree import LoopError, Node, NodeMixin, PostOrderIter, PreOrderIter, TreeError
+from anytree import Node
 
 from .helper import assert_raises, eq_
 
@@ -11,16 +10,15 @@ def test_readonly_pre():
         pass
 
     class ReadonlyNode(Node):
-
         _is_readonly = False
 
         def _pre_attach(self, parent):
             if self._is_readonly:
-                raise ReadonlyError()
+                raise ReadonlyError
 
         def _pre_detach(self, parent):
             if self._is_readonly:
-                raise ReadonlyError()
+                raise ReadonlyError
 
     # construct and make readonly!
     root = ReadonlyNode("root")
@@ -36,23 +34,23 @@ def test_readonly_pre():
 
     def check():
         eq_(root.parent, None)
-        eq_(root.children, tuple([s0, s1]))
+        eq_(root.children, (s0, s1))
         eq_(s0.parent, root)
-        eq_(s0.children, tuple([s0b, s0a]))
+        eq_(s0.children, (s0b, s0a))
         eq_(s0b.parent, s0)
-        eq_(s0b.children, tuple())
+        eq_(s0b.children, ())
         eq_(s0a.parent, s0)
-        eq_(s0a.children, tuple())
+        eq_(s0a.children, ())
         eq_(s1.parent, root)
-        eq_(s1.children, tuple([s1a, s1b, s1c]))
+        eq_(s1.children, (s1a, s1b, s1c))
         eq_(s1a.parent, s1)
-        eq_(s1a.children, tuple())
+        eq_(s1a.children, ())
         eq_(s1b.parent, s1)
-        eq_(s1b.children, tuple())
+        eq_(s1b.children, ())
         eq_(s1c.parent, s1)
-        eq_(s1c.children, tuple([s1ca]))
+        eq_(s1c.children, (s1ca,))
         eq_(s1ca.parent, s1c)
-        eq_(s1ca.children, tuple())
+        eq_(s1ca.children, ())
 
     check()
     with assert_raises(ReadonlyError, ""):

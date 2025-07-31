@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from anytree import Node, RenderTree
 
 from .helper import eq_
@@ -19,7 +17,7 @@ def test_stackoverflow():
     eq_(str(joe), "Node('/Udo/Dan/Joe')")
 
     eq_(
-        ["%s%s" % (pre, node.name) for pre, fill, node in RenderTree(udo)],
+        [f"{pre}{node.name}" for pre, fill, node in RenderTree(udo)],
         [
             "Udo",
             "├── Marc",

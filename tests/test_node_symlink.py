@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
-from anytree import AnyNode, Node, NodeMixin, PostOrderIter, PreOrderIter, SymlinkNode
+from anytree import Node, PostOrderIter, PreOrderIter, SymlinkNode
 
 from .helper import eq_
 
 
 def test_symlink():
-
     root = Node("root")
     s0 = Node("sub0", parent=root)
     s0b = Node("sub0B", parent=s0)
@@ -19,26 +17,26 @@ def test_symlink():
     l0 = Node("l0", parent=ln)
 
     eq_(root.parent, None)
-    eq_(root.children, tuple([s0, s1, ln]))
+    eq_(root.children, (s0, s1, ln))
     eq_(s0.parent, root)
-    eq_(s0.children, tuple([s0b, s0a]))
+    eq_(s0.children, (s0b, s0a))
     eq_(s0b.parent, s0)
-    eq_(s0b.children, tuple())
+    eq_(s0b.children, ())
     eq_(s0a.parent, s0)
-    eq_(s0a.children, tuple())
+    eq_(s0a.children, ())
     eq_(s1.parent, root)
-    eq_(s1.children, tuple([s1a, s1b, s1c]))
+    eq_(s1.children, (s1a, s1b, s1c))
     eq_(s1.foo, 4)
     eq_(s1a.parent, s1)
-    eq_(s1a.children, tuple())
+    eq_(s1a.children, ())
     eq_(s1b.parent, s1)
-    eq_(s1b.children, tuple())
+    eq_(s1b.children, ())
     eq_(s1c.parent, s1)
-    eq_(s1c.children, tuple([s1ca]))
+    eq_(s1c.children, (s1ca,))
     eq_(s1ca.parent, s1c)
-    eq_(s1ca.children, tuple())
+    eq_(s1ca.children, ())
     eq_(ln.parent, root)
-    eq_(ln.children, tuple([l0]))
+    eq_(ln.children, (l0,))
     eq_(ln.foo, 4)
 
     eq_(s1.blub, 17)
