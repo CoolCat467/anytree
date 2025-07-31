@@ -88,10 +88,29 @@ class NodeMixin(Generic[NodeT_co]):
 
     separator = "/"
 
-    @property
-    def parent(self) -> NodeT_co | None:
-        """
-        Parent Node.
+    def __parent_get(self) -> NodeT_co | None:
+        if hasattr(self, "_NodeMixin__parent"):
+            return self.__parent
+        return None
+
+    def __parent_set(self, value: object | None) -> None:
+        if value is not None and not isinstance(value, (NodeMixin, LightNodeMixin)):
+            msg = f"Parent node {value!r} is not of type 'NodeMixin'."
+            raise TreeError(msg)
+        if hasattr(self, "_NodeMixin__parent"):
+            parent = self.__parent
+        else:
+            parent = None
+        if parent is not value:
+            value_co = cast("NodeT_co", value)
+            self.__check_loop(value_co)
+            self.__detach(parent)
+            self.__attach(value_co)
+
+    parent = property(
+        __parent_get,
+        __parent_set,
+        doc="""Parent Node.
 
         On set, the node is detached from any previous parent node and attached
         to the new node.
@@ -123,25 +142,8 @@ class NodeMixin(Generic[NodeT_co]):
         >>> marc.parent = None
         >>> marc.is_root
         True
-        """
-        if hasattr(self, "_NodeMixin__parent"):
-            return self.__parent
-        return None
-
-    @parent.setter
-    def parent(self, value: object | None) -> None:
-        if value is not None and not isinstance(value, (NodeMixin, LightNodeMixin)):
-            msg = f"Parent node {value!r} is not of type 'NodeMixin'."
-            raise TreeError(msg)
-        if hasattr(self, "_NodeMixin__parent"):
-            parent = self.__parent
-        else:
-            parent = None
-        if parent is not value:
-            value_co = cast("NodeT_co", value)
-            self.__check_loop(value_co)
-            self.__detach(parent)
-            self.__attach(value_co)
+        """,
+    )
 
     def __check_loop(self, node: NodeT_co | None) -> None:
         if node is not None:
@@ -281,36 +283,6 @@ class NodeMixin(Generic[NodeT_co]):
         anytree.node.exceptions.TreeError: Cannot add node Node('/n/a') multiple times as child.
         """,
     )
-
-    @children.setter  # type: ignore[no-redef]
-    def children(self, children: tuple[NodeT_co, ...]) -> None:
-        # convert iterable to tuple
-        children = tuple(children)
-        NodeMixin.__check_children(children)
-        # ATOMIC start
-        old_children = self.children
-        del self.children
-        try:
-            self._pre_attach_children(children)
-            for child in children:
-                child.parent = self
-            self._post_attach_children(children)
-            if ASSERTIONS:  # pragma: no branch
-                assert len(self.children) == len(children)
-        except Exception:
-            self.children = old_children
-            raise
-        # ATOMIC end
-
-    @children.deleter  # type: ignore[no-redef]
-    def children(self) -> None:
-        children = self.children
-        self._pre_detach_children(children)
-        for child in self.children:
-            child.parent = None
-        if ASSERTIONS:  # pragma: no branch
-            assert len(self.children) == 0
-        self._post_detach_children(children)
 
     def _pre_detach_children(self, children: tuple[NodeT_co, ...]) -> None:
         """Method call before detaching `children`."""
