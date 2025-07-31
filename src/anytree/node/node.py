@@ -77,7 +77,11 @@ class Node(NodeMixin["Node"]):
     """
 
     def __init__(
-        self, name: str, parent: Node | None = None, children: Iterable[Node] | None = None, **kwargs: Any
+        self,
+        name: str,
+        parent: Node | None = None,
+        children: Iterable[Node] | None = None,
+        **kwargs: Any,
     ) -> None:
         self.__dict__.update(kwargs)
         self.name = name
